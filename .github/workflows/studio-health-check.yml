@@ -1,0 +1,27 @@
+name: studio-health-check
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check studio endpoints
+        run: |
+          set -u
+          fail=0
+          check() {
+            name="$1"; url="$2"; ok_codes="$3"
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$url" || echo 000)
+            echo "$name: $url -> HTTP $code"
+            case " $ok_codes " in *" $code "*) ;; *) echo "::warning::$name unhealthy (HTTP $code)"; fail=1;; esac
+          }
+          check "Supabase" "https://gzohqcbpvmuzkybjvnyv.supabase.co/auth/v1/health" "200"
+          check "Sakupa" "https://sakupa.com/" "200"
+          check "Sakupa API" "https://api.sakupa.com/" "200 404"
+          check "OpenRouter" "https://openrouter.ai/api/v1/models" "200"
+          check "make.fun" "https://make.fun/api/competitions" "200 401"
+          check "GitHub repo" "https://api.github.com/repos/Putraturu/lord-studio" "200"
+          if [ "$fail" -ne 0 ]; then echo "One or more checks failed"; exit 1; fi
+          echo "All studio endpoints healthy"
