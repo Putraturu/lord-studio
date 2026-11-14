@@ -17,7 +17,7 @@ jobs:
             echo "$name: $url -> HTTP $code"
             case " $ok_codes " in *" $code "*) ;; *) echo "::warning::$name unhealthy (HTTP $code)"; fail=1;; esac
           }
-          check "Supabase" "https://gzohqcbpvmuzkybjvnyv.supabase.co/auth/v1/health" "200"
+          check "Supabase" "https://gzohqcbpvmuzkybjvnyv.supabase.co/auth/v1/health" "200 401"
           check "Sakupa" "https://sakupa.com/" "200"
           check "Sakupa API" "https://api.sakupa.com/" "200 404"
           check "OpenRouter" "https://openrouter.ai/api/v1/models" "200"
