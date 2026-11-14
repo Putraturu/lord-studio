@@ -1,0 +1,17 @@
+name: studio-smoke-test
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * *"
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Smoke test
+        run: |
+          echo "lord-studio smoke test OK"
+          date
+          echo "Runner OS: $RUNNER_OS"
